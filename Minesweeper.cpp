@@ -3,6 +3,7 @@
 
 
 #include "Board.h"
+#include "Tile.h"
 #include <iostream>
 #include <time.h>
 #include <vector>
@@ -87,12 +88,12 @@ void print_board(const Board& board)
 		std::cout << i << ": "; //row numbers
 		for (int j = 0; j < board.get_board_width(); ++j)
 		{
-			if (board.get_flag(j, i))
+			if (board[j][i].is_flagged())
 				std::cout << "[f]";
-			else if (!board.get_reveal(j, i))
+			else if (!board[j][i].is_revealed())
 				std::cout << "[ ]";
 			else
-				std::cout << '[' << board.get_adj_mines(j, i) << ']';
+				std::cout << '[' << board[j][i].get_adj_mine_count() << ']';
 		}
 		std::cout << std::endl;
 	}
@@ -115,12 +116,12 @@ void reveal_board(const Board& board)
 		std::cout << i << ": "; //row numbers
 		for (int j = 0; j < board.get_board_width(); ++j)
 		{
-			if (!board.get_mine(j, i))
-				std::cout << "[" << board.get_adj_mines(j, i) << "]";
+			if (!board[j][i].has_mine())
+				std::cout << "[" << board[j][i].get_adj_mine_count() << "]";
 			else
 			{
-				if (board.get_reveal(j, i))
-					std::cout << "[X]";
+				if (board[j][i].is_revealed())
+					std::cout << "[X]"; //Show user which mine they tripped
 				else
 					std::cout << "[M]";
 			}
@@ -157,15 +158,15 @@ int main()
 		switch (act)
 		{
 		case action::reveal:
-			board.reveal(input.get_x(), input.get_y());
-			if (board.get_mine(input.get_x(), input.get_y()))
+			board[input.get_x()][input.get_y()].reveal(board);
+			if (board[input.get_x()][input.get_y()].has_mine())
 			{
 				game_over = true;
 				won = false;
 			}
 			break;
 		case action::flag:
-			board.flag(input.get_x(), input.get_y());
+			board[input.get_x()][input.get_y()].toggle_flag();
 			break;
 		case action::exit:
 			game_over = true;

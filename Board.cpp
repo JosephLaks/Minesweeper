@@ -56,22 +56,11 @@ Board::~Board()
 	delete[] board;
 }
 
-bool Board::get_mine(int x, int y) const
+Tile* Board::operator[] (int i) const
 {
-	return board[y][x].get_mine();
+	return board[i % height]; //% keeps it in-bounds.
 }
-bool Board::get_reveal(int x, int y) const
-{
-	return board[y][x].get_reveal();
-}
-bool Board::get_flag(int x, int y) const
-{
-	return board[y][x].get_flag();
-}
-int Board::get_adj_mines(int x, int y) const
-{
-	return board[y][x].get_adj_mines();
-}
+
 int Board::get_board_height() const
 {
 	return height;
@@ -85,17 +74,9 @@ int Board::get_uncleared_tiles() const
 	return uncleared_tiles;
 }
 
-void Board::reveal(int x, int y)
-{
-	board[y][x].reveal(*this);
-}
 void Board::decrement_uct()
 {
 	--uncleared_tiles;
-}
-void Board::flag(int x, int y)
-{
-	board[y][x].toggle_flag();
 }
 void Board::place_mine(int x, int y)
 {

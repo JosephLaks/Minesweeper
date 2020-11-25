@@ -7,19 +7,19 @@ void Tile::fill_adj_tiles(std::vector<Tile*> vec)
 	adj_tiles = vec;
 }
 //Get Methods:
-bool Tile::get_mine() const
+bool Tile::has_mine() const
 {
-	return has_mine;
+	return contains_mine;
 }
-bool Tile::get_reveal() const
+bool Tile::is_revealed() const
 {
 	return revealed;
 }
-bool Tile::get_flag() const
+bool Tile::is_flagged() const
 {
 	return flagged;
 }
-int Tile::get_adj_mines() const
+int Tile::get_adj_mine_count() const
 {
 	return adj_mines;
 }
@@ -47,7 +47,7 @@ void Tile::reveal(Board& board)
 }
 void Tile::place_mine()
 {
-	has_mine = true;
+	contains_mine = true;
 	for (auto& tile : adj_tiles)
 	{
 		tile->adj_mines++;
