@@ -48,7 +48,7 @@ public:
 				player_action = action::flag;
 			else if (act == 'r')
 				player_action = action::reveal;
-			else if (act == 'e')
+			else if (act == 'x')
 				player_action = action::exit;
 			else if (act == 'c')
 				player_action = action::cheat;
@@ -88,12 +88,12 @@ void print_board(const Board& board)
 		std::cout << i << ": "; //row numbers
 		for (int j = 0; j < board.get_board_width(); ++j)
 		{
-			if (board[j][i].is_flagged())
+			if (board[i][j].is_flagged())
 				std::cout << "[f]";
-			else if (!board[j][i].is_revealed())
+			else if (!board[i][j].is_revealed())
 				std::cout << "[ ]";
 			else
-				std::cout << '[' << board[j][i].get_adj_mine_count() << ']';
+				std::cout << '[' << board[i][j].get_adj_mine_count() << ']';
 		}
 		std::cout << std::endl;
 	}
@@ -116,11 +116,11 @@ void reveal_board(const Board& board)
 		std::cout << i << ": "; //row numbers
 		for (int j = 0; j < board.get_board_width(); ++j)
 		{
-			if (!board[j][i].has_mine())
-				std::cout << "[" << board[j][i].get_adj_mine_count() << "]";
+			if (!board[i][j].has_mine())
+				std::cout << "[" << board[i][j].get_adj_mine_count() << "]";
 			else
 			{
-				if (board[j][i].is_revealed())
+				if (board[i][j].is_revealed())
 					std::cout << "[X]"; //Show user which mine they tripped
 				else
 					std::cout << "[M]";
@@ -143,30 +143,30 @@ void print_victory()
 
 int main()
 {
-	const int width = 15;
+	const int width = 2;
 	const int height = 15;
 	const int num_mines = 5;
 
 	Board board(height, width, num_mines);
 	bool game_over = false;
 	bool won = false;
-	while (!game_over)
+	do
 	{
 		print_board(board);
-		User_Input input(width, height);
+		User_Input input(board.get_board_width(), board.get_board_height());
 		action act = input.get_player_action();
 		switch (act)
 		{
 		case action::reveal:
-			board[input.get_x()][input.get_y()].reveal(board);
-			if (board[input.get_x()][input.get_y()].has_mine())
+			board[input.get_y()][input.get_x()].reveal(board);
+			if (board[input.get_y()][input.get_x()].has_mine())
 			{
 				game_over = true;
 				won = false;
 			}
 			break;
 		case action::flag:
-			board[input.get_x()][input.get_y()].toggle_flag();
+			board[input.get_y()][input.get_x()].toggle_flag();
 			break;
 		case action::exit:
 			game_over = true;
@@ -182,7 +182,8 @@ int main()
 			won = true;
 			game_over = true;
 		}
-	}
+	} while (!game_over);
+
 	reveal_board(board);
 	if (!won)
 		print_defeat();

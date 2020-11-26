@@ -2,6 +2,7 @@
 #include "Tile.h"
 #include <vector>
 #include <time.h>
+#include<assert.h>
 
 std::vector<Tile*> Board:: get_adj_tiles(unsigned int x, unsigned int y)
 {
@@ -58,7 +59,8 @@ Board::~Board()
 
 Tile* Board::operator[] (int i) const
 {
-	return board[i % height]; //% keeps it in-bounds.
+	assert(i < height);
+	return board[i]; 
 }
 
 int Board::get_board_height() const
