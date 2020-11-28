@@ -141,53 +141,83 @@ void print_victory()
 		<< "Glory to the cause!!" << std::endl;
 }
 
+unsigned int input_int(std::string prompt, const unsigned int max_size)
+{
+	std::string input;
+	unsigned int output;
+	std::cout << "Please enter the " << prompt << ":" << std::endl;
+	std::cin >> input;
+	try
+	{
+		output = std::stoi(input, nullptr, 10) % max_size;
+	}
+	catch (std::exception e)
+	{
+		output = input[0] % max_size;
+	}
+	return output;
+}
+
+bool input_continue()
+{
+	std::string input;
+	std::cout << "Would you like to play again? (Y/N)" << std::endl;
+	std::cin >> input;
+	if (input[0] == 'Y')
+		return true;
+	return false;
+}
+
 int main()
 {
-	const int width = 2;
-	const int height = 15;
-	const int num_mines = 5;
-
-	Board board(height, width, num_mines);
-	bool game_over = false;
-	bool won = false;
 	do
 	{
-		print_board(board);
-		User_Input input(board.get_board_width(), board.get_board_height());
-		action act = input.get_player_action();
-		switch (act)
-		{
-		case action::reveal:
-			board[input.get_y()][input.get_x()].reveal(board);
-			if (board[input.get_y()][input.get_x()].has_mine())
-			{
-				game_over = true;
-				won = false;
-			}
-			break;
-		case action::flag:
-			board[input.get_y()][input.get_x()].toggle_flag();
-			break;
-		case action::exit:
-			game_over = true;
-			break;
-		case action::cheat:
-			reveal_board(board);
-			break;
-		default:
-			break;
-		}
-		if (board.get_uncleared_tiles() == 0)
-		{
-			won = true;
-			game_over = true;
-		}
-	} while (!game_over);
+		const unsigned int width = input_int("width of the board", 100);
+		const int height = input_int("height of the board", 100);
+		const int num_mines = input_int("number of mines", width * height);
 
-	reveal_board(board);
-	if (!won)
-		print_defeat();
-	else
-		print_victory();
+		Board board(height, width, num_mines);
+		bool game_over = false;
+		bool won = false;
+		do
+		{
+			print_board(board);
+			User_Input input(board.get_board_width(), board.get_board_height());
+			action act = input.get_player_action();
+			switch (act)
+			{
+			case action::reveal:
+				board[input.get_y()][input.get_x()].reveal(board);
+				if (board[input.get_y()][input.get_x()].has_mine())
+				{
+					game_over = true;
+					won = false;
+				}
+				break;
+			case action::flag:
+				board[input.get_y()][input.get_x()].toggle_flag();
+				break;
+			case action::exit:
+				game_over = true;
+				break;
+			case action::cheat:
+				reveal_board(board);
+				break;
+			default:
+				break;
+			}
+			if (board.get_uncleared_tiles() == 0)
+			{
+				won = true;
+				game_over = true;
+			}
+		} while (!game_over);
+
+		reveal_board(board);
+		if (!won)
+			print_defeat();
+		else
+			print_victory();
+	} while (input_continue());
 }
 
